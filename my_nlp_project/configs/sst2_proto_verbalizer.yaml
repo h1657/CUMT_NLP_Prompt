@@ -1,0 +1,65 @@
+dataset:
+  name: sst-2
+  path: my_nlp_project/data
+
+plm:
+  model_name: bert
+  model_path: /root/autodl-tmp/OpenPrompt/bert-base-uncased
+  optimize:
+    freeze_para: False
+    lr: 2e-5
+    weight_decay: 0.01
+    scheduler:
+      type: linear
+      num_warmup_steps: 100
+
+train:
+  batch_size: 16
+  num_epochs: 3
+  train_verblizer: post
+
+test:
+  batch_size: 16
+
+dev:
+  batch_size: 16
+
+reproduce:
+  seed: 42
+
+template: manual_template
+verbalizer: proto_verbalizer
+
+manual_template:
+  choice: 0
+  file_path: /root/autodl-tmp/OpenPrompt/my_nlp_project/prompt_resources/SST-2/manual_template.txt
+
+proto_verbalizer:
+  choice: 0
+  file_path: /root/autodl-tmp/OpenPrompt/my_nlp_project/prompt_resources/SST-2/manual_verbalizer.txt
+  lr: 0.01
+  mid_dim: 64
+  epochs: 30
+  multi_verb: multi
+
+environment:
+  num_gpus: 1
+  cuda_visible_devices: [0]
+  local_rank: 0
+
+learning_setting: few_shot
+
+few_shot:
+  parent_config: learning_setting
+  few_shot_sampling: sampling_from_train
+
+sampling_from_train:
+  parent_config: few_shot_sampling
+  num_examples_per_label: 16
+  also_sample_dev: False
+  seed: [42, 123, 456]
+
+logging:
+  path_base: /root/autodl-tmp/OpenPrompt/my_nlp_project/logs
+  unique_string: sst2_bert_manual_template_proto_verbalizer_16shot
+  overwrite: false
